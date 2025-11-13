@@ -53,6 +53,7 @@ finally:
 # sin Multiple Exceptions :
 
 
+"""
 try:
 
     num = int(input("Enter a number :"))
@@ -73,3 +74,64 @@ else:
 
 finally:
     print("Finished")
+
+"""
+
+# Catching all exceptions :
+
+"""
+
+try:
+
+    num = int(input("Enter a number :"))
+
+    division = 10 / num
+
+except Exception as e:
+
+    print(e)
+
+finally:
+
+    print("Thank you")
+
+"""
+
+# Raising  Exception :
+
+"""
+num = int(input("Enter a Number : "))
+
+if num < 0:
+
+    raise ValueError("No Negative Numbers")
+
+"""
+
+# Custom Exception :
+
+"""
+class NegativeNumberError(Exception):
+
+    pass 
+
+
+try:
+    num = int(input("Enter a Number : "))
+
+    if num < 0:
+
+        raise NegativeNumberError("No Negative Numbers")
+    
+except NegativeNumberError as e:
+
+    print("Error :",e)
+
+    """
+
+
+builtin_list = dir(locals()['__builtins__'])
+
+print(len(builtin_list))
+
+print(builtin_list)
