@@ -1,0 +1,686 @@
+<?php 
+/*
+*this is template for displaying archive pages
+*@package Limited
+ */
+
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
+get_header();
+wp_enqueue_script('jquery');
+$category = get_queried_object();
+$category_id = $category->term_id;
+
+ $texonomy = $category->taxonomy;
+ $term_id = $category->term_id;
+$name = $category->name;
+$description = $category->description;
+
+
+
+
+ ?>
+ 		
+<link href="<?php echo get_template_directory_uri();?>/category.css" rel="stylesheet" >
+
+<section class="all-courses-tabs testit">
+	<div class="container">
+		<div id="navbar-inner-filter" class="navbar-inner-filter filter-nav filter-wrapper">
+			<ul class="navbarfilter" id="navbarfilter" >
+			<?php 
+				// Get all terms for the specified taxonomy
+				$terms = get_terms(array(
+					'taxonomy' => $texonomy,
+					'hide_empty' => false, // Change to true if you want to hide terms with no posts
+				));
+
+				if (!empty($terms) && !is_wp_error($terms)) {
+					
+					echo '<li class="selected" id="">';
+						echo '<a data-filter="" data-slug="" href="' . esc_url(get_term_link($category)) . '">' . esc_html($category->name) . '</a>';
+						echo '</li>';
+					
+					foreach ($terms as $term) {
+						if($term->term_id != $category_id){	
+						echo '<li id="">';
+						echo '<a data-filter="" data-slug="" href="' . esc_url(get_term_link($term)) . '">' . esc_html($term->name) . '</a>';
+						echo '</li>';
+						}
+					}
+					
+				}
+			
+			?>
+			
+			</ul>	
+			<ul class="dropdown newC" id="more-nav">
+				<li>
+					<button class="all-course-dropdown-toggle dropdown-toggle" type="button" data-toggle="dropdown">
+						<span class="all-course-dropdown-icon"></span> 
+					</button>
+					<ul class="dropdown-menu dropdown-menu-right subfilter" id="secondNav" >
+						
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</section>
+
+<section id="cat-hero-section">
+	<div class="container">
+		<div class="breadcrumbs" itemscope="" itemtype="http://schema.org/BreadcrumbList">
+			<span itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+				<a itemprop="item" href="<?= site_url(); ?>"><span itemprop="name">Home</span></a>
+				<meta itemprop="position" content="1">
+			</span>
+			<span itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+				<a itemprop="item" href="#" class="at-uncursor">
+					<span itemprop="name" class="active-bread"><?= $name ?></span>
+				</a>
+				<meta itemprop="position" content="2">
+			</span>
+		</div>
+
+		
+		<div class="row justify-content-between">
+			<div class="col-lg-6">
+				<h1 class="font-bold"><?= $name ?> </h1>
+				<div class="cat-hero-sub-heading1"><?= $description ?></div>
+			</div>
+			
+		<?php 	$field_value = get_field('hero_text', $texonomy .'_'. $term_id); 
+		
+		if($field_value['image'] == ''){
+			$field_value['image'] = get_stylesheet_directory_uri().'/assets/img/cat-hero.png';
+		}	
+		
+			if($field_value['videoid'] != ''){ ?>
+			
+				<div class="col-lg-5 hero-right-video">
+				 <span class="ak-cat-video career-transition-mystory" data-src="https://www.youtube.com/embed/<?= $field_value['videoid'] ?>" data-toggle="modal" data-target="#video-popup-with-form"> 
+					<img id="coursePreviewImage" src="<?php echo $field_value['image']; ?>" class="img-fluid" width="445" height="226" alt="Btree"/ fetchpriority="high" />
+					 <span class="hero-preview-icon"></span>
+				</span>
+			</div>
+				
+		<?php 	}else{
+		?>
+			<div class="col-lg-5 hero-right-video">
+				<!-- <span class="ak-cat-video" data-src="https://www.youtube.com/embed/<?= $field_value['videoid'] ?>" data-toggle="modal" data-target="#video-popup-with-form">  -->
+					<img id="coursePreviewImage" src="<?php echo $field_value['image']; ?>" class="img-fluid" width="445" height="226" alt="Btree"/ fetchpriority="high" />
+				<!--	 <span class="hero-preview-icon"></span>
+				</span> -->
+			</div>
+			
+			<?php } ?>
+		</div>
+	</div>
+</section>
+
+
+<?php $count_section = get_field('count_sections', $texonomy .'_'. $term_id); 
+
+if($count_section != '' && count($count_section) > 0){
+?>
+	
+<section id="home-key-feature">
+	<div class="container">
+		<div class="row align-items-center justify-content-center">
+		<?php 
+		
+			foreach($count_section['countdata'] as $countt){
+				
+				
+		?>
+			<div class="col-lg-3 col-md-6 col-6">
+				<div class="home-key-feature-wrap">
+					<div class="home-key-feature-count"><?= $countt['count_number'] ?></div>
+					<div class="home-key-feature-text"><?= $countt['count_desciption'] ?></div>
+				</div>
+			</div>
+			<?php } ?>	
+		</div>
+	</div>
+</section>
+<?php } ?>
+
+
+<?php $logo_slider = get_field('logo_slider', $texonomy .'_'. $term_id); 
+
+if($logo_slider != '' && count($logo_slider) > 0){
+?>
+
+<section id="companies">
+	<div class="container">
+		<h2 class="companies-heading"><?= $logo_slider['logo_title'] ?></h2>
+	</div>
+	<div class="slider">
+					<div class="slide-track">
+		<?php foreach($logo_slider['logo'] as $logo){ ?>
+			<div class="slide">
+							<img src="<?php echo $logo['logo'];?>" alt="<?= getImageNameFromUrl($logo['logo']) ?>" width="150" height="70" fetchpriority="high" class="img-fluid">
+			</div>
+		<?php } ?>	
+			
+		</div>
+	</div>
+	
+</section>
+<style>
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(-250px * 7));
+    }
+}
+.slider {
+    height:70px;
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.slider::after {
+    right: 0;
+    top: 0;
+    transform: rotateZ(180deg);
+}
+.slider::before {
+    left: 0;
+    top: 0;
+}
+.slider .slide-track {
+    animation: scroll 40s linear infinite;
+    display: flex;
+    width: calc(250px * 14);
+}
+.slide img {
+    width:150px;
+}
+.slider .slide {
+    height:70px;
+    width:170px;
+    display: flex;
+    align-items: center;
+    padding: 0px 10px;
+}
+.slider:hover .slide-track {
+    animation-play-state: paused; /* Pauses the animation on hover */
+}
+</style>
+<?php } ?>
+
+
+
+<?php 
+function load_more_courses(){
+
+    $page     = intval($_POST['page']);  
+    $limit    = 8;  
+    $offset   = $page * $limit;  
+
+    $term_id  = $_POST['term_id'];
+    $taxonomy = $_POST['taxonomy'];
+
+    $args = array(
+        'post_type' => 'course',
+        'tax_query' => array(
+            array(
+                'taxonomy' => $taxonomy,
+                'field'    => 'term_id',
+                'terms'    => $term_id,
+            ),
+        ),
+        'posts_per_page' => $limit,
+        'offset' => $offset,
+    );
+
+    $query = new WP_Query($args);
+
+    if($query->have_posts()){
+        while($query->have_posts()){
+            $query->the_post();
+            echo '<div class="category-courses-item">';
+            post_card(get_the_ID());
+            echo '</div>';
+        }
+    } else {
+        echo "DONE";
+    }
+
+    wp_die();
+}
+
+add_action('wp_ajax_load_more_courses', 'load_more_courses');
+add_action('wp_ajax_nopriv_load_more_courses', 'load_more_courses');
+
+
+$args = array(
+    'post_type' => 'course',
+    'tax_query' => array(
+        array(
+            'taxonomy' => $texonomy,
+            'field'    => 'term_id',
+            'terms'    => $term_id,
+        ),
+    ),
+    'posts_per_page' => 8,
+    'paged' => 1,
+);
+
+$query = new WP_Query($args);
+
+if ($query->have_posts()) { ?>
+<section id="home-explore-courses">
+    <div class="container">
+        <h2 class="main-heading text-center"><?= $name ?> Courses</h2>
+
+        <div class="category-courses " id="course-container">
+            <?php while ($query->have_posts()) {
+                $query->the_post();
+                echo '<div class="category-courses-item">';
+                post_card(get_the_ID());
+                echo '</div>';
+            } ?>
+        </div>
+
+        <?php 
+            // 🔥 console-la TOTAL courses(DB) count show pannum:
+            echo "<script>console.log('Total DB course count (found_posts) = ".$query->found_posts."')</script>";
+
+            if ( $query->found_posts > 8 ) { ?>
+            <div class="load-more-container text-center d-none d-md-block">
+                <button class="theme-btn" id="load-more-cat"
+                    data-term="<?php echo $term_id; ?>"
+                    data-tax="<?php echo $texonomy; ?>"
+                    data-page="0">
+                    Load More
+                </button>
+            </div>
+        <?php } ?>
+
+    </div>
+</section>
+<?php } wp_reset_postdata(); ?>
+
+
+<!-- 	above is load more button	 -->
+		
+<?php $Interested = get_field('interested', $texonomy .'_'. $term_id); 
+
+if($Interested['title'] != ''){
+?>		
+	
+<section id="interested-program-cta-section">
+	<div class="container">
+		<div class="interested-program-cta">
+			<div class="row justify-content-between align-items-end">
+				<div class="col-lg-8">
+					<div class="interested-program-content-wrap">
+						<div class="interested-program-heading"><?= $Interested['title'] ?></div>
+						<div class="interested-program-para"><?= $Interested['subtitle'] ?></div>
+				
+						
+						<form class="form-default zohoform" action="https://forms.zohopublic.in/btreesystems/form/BtreeHomePage1/formperma/se7TtdC3eOyDipSL9qkv9xS2pc2-ILRBp7atYahivh8/htmlRecords/submit" name="form" id="" method="POST" accept-charset="UTF-8" enctype="multipart/form-data">
+							<input type="hidden" name="zf_referrer_name" value="<?= get_permalink(); ?>"><!-- To Track referrals , place the referrer name within the " " in the above hidden input field -->
+				<input type="hidden" name="zf_redirect_url" value="<?= get_the_title(); ?>"><!-- To redirect to a specific page after record submission , place the respective url within the " " in the above hidden input field -->
+				<input type="hidden" name="zc_gad" value="">
+						<div style="display:none;" class="form-group">
+						<input class="form-control" id="" placeholder="Full Name*" type="text" name="SingleLine" value="" fieldtype="1" maxlength="255" required="">
+					</div>
+				<input  type="hidden" name="SingleLine3" value="Category Interested" fieldType=1 maxlength="255" placeholder="" />	
+			
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<input class="form-control" placeholder="Email*" type="email" maxlength="255" name="Email" id="" value="" fieldtype="9" required="">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-row m-0">
+										<div class="form-group select-country-wrap pr-0" style="margin-right: -1px;">
+											<select class="form-control rounded-0 countrycode" placeholder="" compname="PhoneNumber_countrycodeval" name="SingleLine2" phoneformat="1" maxlength="10" id="countrycode" aria-label="Select a Country">
+											</select>
+										</div>
+										<div class="form-group mobile-wrap-with-country pl-0">
+											<input class="form-control rounded-0 PhoneNumber" placeholder="Mobile Number*" type="number" compname="PhoneNumber" name="PhoneNumber_countrycode" phoneformat="1" iscountrycodeenabled="true" maxlength="20" value="" fieldtype="11" id="" required="" />
+										</div>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label class="form-check-label black" for="exampleCheck2" id="">
+											<input type="checkbox" id="exampleCheck2" class="form-check-input" required="" value="true" checked=""> By providing your contact details, you agree to our <a href="/terms-of-use/" target="_blank">Terms of Use</a>  &amp;  <a href="/privacy-policy/" target="_blank">Privacy Policy</a>
+										</label>
+									</div>
+								</div>
+								<div class="col-md-4 col-sm-5">
+									<div class="">
+										<input id="" type="submit" name="" value="Start Application" class="form-submit">
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="col-lg-4 d-none d-lg-block">
+					<div class="interested-program-cta-img">
+					<img src="<?= $Interested['image'] ?>" alt="<?= getImageNameFromUrl($Interested['image']) ?> class="img-fluid">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<?php } ?>
+
+
+<?php $career = get_field('career_transition', $texonomy .'_'. $term_id); ?>
+
+<?php  if($career != '' && count($career) > 0){  ?>
+
+<section id="career-transition">
+	<div class="container">
+		<h2 class="main-heading text-center">Career Transition</h2>
+		
+		<div class="career-transition-carousel slider-dot-style">
+		
+		<?php foreach($career as $cart_id){ 
+		
+		$titl = get_the_title($cart_id);
+		$designation = get_field('designation',$cart_id);
+		$video_id = get_field('video_id',$cart_id);
+		$description = get_field('description',$cart_id);
+		$transition_text = get_field('transition_text',$cart_id);
+		$from_text = get_field('from_text',$cart_id);
+		$from_image = get_field('from_image',$cart_id);
+		$to_text = get_field('to_text',$cart_id);
+		$to_image = get_field('to_image',$cart_id);
+		?>
+		
+			<div class="career-transition-item">
+				<div class="career-transition-carousel-head-wrap justify-content-between">
+					<div class="career-transition-carousel-detail">
+						<div class="career-transition-carousel-head">
+						<?php 
+											 $featured_image_url = get_the_post_thumbnail_url($cart_id, 'full');
+												if ($featured_image_url) {
+													echo '<img width="80" height="80" src="' . esc_url($featured_image_url) . '" class="career-transition-img" alt="' .$titl. '" />';
+												}
+											?>
+							<div class="career-transition-carousel-header">
+								<h3 class="career-transition-name"><?= $titl ?></h3>
+							<p class="career-transition-designation"><?= $designation ?></p>
+							</div>
+						</div>
+					</div>
+					<div class="career-transition-my-story-wrap">
+						<div class="career-transition-mystory" data-src="https://www.youtube.com/embed/<?= $video_id ?>" data-toggle="modal" data-target="#video-popup-with-form" tabindex="0">
+							<i class="career-transition-my-story-icon"></i>
+							<span>Hear My Story</span>
+						</div>
+					</div>
+				</div>
+				<div class="career-transition-hike"><?= $transition_text ?></div>
+				<div class="career-transition-para"><?= addReadMore($description,40) ?></div>
+				<div class="career-transition-detail-wrap">
+					<div class="career-transition-company">
+						<img class="career-transition-content-img" src="<?= $from_image ?>" width="140" height="40" alt="Btree">
+						<p class="career-transition-content-name "><?= $from_text ?></p>
+					</div>
+					<div class="career-transition-icon-wrapper">
+						<span class="career-transition-icon"></span>
+					</div>
+					<div class="career-transition-company">
+						<img class="career-transition-content-img" src="<?= $to_image ?>" width="140" height="40" alt="Btree">
+						<p class="career-transition-content-name"><?= $to_text ?></p>
+					</div>
+				</div>
+			</div>
+		<?php } ?>	
+		</div>
+	</div>
+</section>
+<?php } ?>
+
+
+<?php $popular_courses = get_field('other_courses', $texonomy .'_'. $term_id); ?>
+
+<?php  if($popular_courses != '' && count($popular_courses) > 0){  ?>
+<section id="other-courses">
+	<div class="container">
+		<h2 class="main-heading text-center">Other Courses</h2>
+		<div class="other-courses-carousel slider-dot-style">
+		
+		<?php foreach($popular_courses as $course_id){ ?>
+			<div class="other-courses-carousel-item">
+			
+			<?php post_card($course_id); ?>
+			
+			</div>
+		<?php } ?>	
+		</div>
+	</div>
+</section>
+<?php } ?>
+
+<?php
+$testimonial = get_field('testimonial', $texonomy .'_'. $term_id); 
+
+ $career_transition = get_field('video_reviews', $texonomy .'_'. $term_id); ?>
+
+<?php if(($career_transition != '' && count($career_transition) > 0) || ($testimonial['posts'] != '' && count($testimonial['posts']) > 0)){ ?>
+<section id="testimonial">
+	<div class="container">
+		<h2 class="main-heading text-center"><?php if($testimonial['title'] != ''){ echo $testimonial['title']; }else{ echo "Testimonials"; } ?></h2>
+		
+
+
+<?php  if($career_transition != '' && count($career_transition) > 0){  ?>		
+		
+		<div class="video-testimonial-carousel slider-dot-style">
+		<?php foreach($career_transition as $car_id){ 
+		$titl = get_the_title($car_id);
+		$designation = get_field('designation',$car_id);
+		$video_id = get_field('video_id',$car_id);
+		?>
+		
+			<div class="video-testimonial-item">
+				<span class="video-testimonial-link career-transition-mystory" data-src="//www.youtube.com/embed/<?= $video_id ?>" data-toggle="modal" data-target="#video-popup-with-form" tabindex="0">
+					<?php 
+											 $featured_image_url = get_the_post_thumbnail_url($car_id, 'full');
+												if ($featured_image_url) {
+													echo '<img src="' . esc_url($featured_image_url) . '" class="img-fluid" alt="' .$titl. '" /><i class="career-transition-my-story-icon"></i>';
+												}
+											?>
+					
+				</span>
+				<div class="video-testimonial-detail">
+					<div>
+						<h3 class="m-0"><?= $titl ?></h3>
+						<div class="video-testimonial-designation"><?= $designation ?></div>
+					</div>
+					<!-- <a rel="noreferrer nofollow" class="linkedin_url" target="_blank" href="#" title="Sanu Anand" aria-label="Read more Sanu Anand" tabindex="0">
+						<i class="video-testimonial-linkedin-icon"></i>
+					</a> -->
+				</div>
+			</div>
+		<?php } ?>
+		</div>
+<?php } ?>	
+
+
+
+<?php  if($testimonial['posts'] != '' && count($testimonial['posts']) > 0){  ?>
+		<div class="testimonial-carousel slider-dot-style">
+		<?php foreach($testimonial['posts'] as $testi){	?>
+			<div class="testimonial-item">
+				<span class="inverted"></span>
+				<div class="testimonial-rating">
+					<i class="testimonial-star <?php  $classes = get_field('starclass',$testi); if($classes != ''){ echo $classes; }else{ echo 'five-star'; } ?>"></i>
+				</div>
+				<div class="testimonial-description"><?= addReadMore(get_field('description',$testi),30) ?></div>
+				<div class="testimonial-user-wrapper">
+				<?php 
+											 $featured_image_url = get_the_post_thumbnail_url($testi, 'full');
+												if ($featured_image_url) {
+													echo '<img src="' . esc_url($featured_image_url) . '" width="70" height="70" alt="'.getImageNameFromUrl($featured_image_url).'" title="Testimonials" class="img-fluid" alt="' . get_the_title($id) . '" />';
+												}
+											?>
+					<div class="testimonial-user-detail">
+						<div class="testimonial-user-name"><?= get_the_title($testi) ?></div>
+						<div class="testimonial-user-designation"><?= get_field('designation',$testi) ?></div>
+					</div>
+				</div>
+			</div>
+<?php	} ?>
+		</div>
+<?php } ?>
+		
+	</div>
+</section>
+<?php } ?>
+
+<?php $transform = get_field('transform', $texonomy .'_'. $term_id); ?>
+<?php  if($transform['title'] != ''){  ?>
+
+<section id="corporate-cta-section">
+	<div class="container">
+		<div class="corporate-cta-wrapper">
+			<div class="corporate-cta-heading"><?= $transform['title'] ?></div>
+			<div class="corporate-cta-para"><?= $transform['subtitle'] ?></div>
+			<div class="corporate-cta-btn-wrapper">
+				<a href="<?= $transform['link'] ?>" class="theme-btn-2">Corporate Training</a>
+			</div>
+		</div>
+	</div>
+</section>
+<?php } ?>
+
+
+
+<?php $faq = get_field('faq', $texonomy .'_'. $term_id); ?>
+<?php  if($faq['faq_content'] != '' && count($faq['faq_content']) > 0){ ?>
+<section id="faq-section">
+	<div class="container">
+		<h2 class="main-heading text-center"><?php if($faq['title'] == ''){ ?>FAQ 's on <?= $name ?> <?php }else{ echo $faq['title'];} ?></h2>
+		
+		<div id="faq-accordian">
+			<?php 
+			$count = 0;
+			foreach($faq['faq_content'] as $faqdata){ 
+			
+			if($count == 0){
+				$class="active";
+				$style="display:block";
+			}else{
+				$class="";
+				$style="";
+			}
+			
+			?>
+		
+			<div class="faq-accordian-item">
+				<h2 class="faq-accordian-title <?= $class ?>" data="tab<?= $count ?>"><?= $faqdata['title'] ?></h2>
+				<div class="faq-accordian-content" id="tab<?= $count ?>" style="<?= $style ?>">
+					<?= $faqdata['description'] ?>
+				</div>
+			</div>
+			
+			<?php 
+			$count++;
+			} ?>	
+		</div>
+	</div>
+</section>
+<?php } ?>
+
+
+<!-- <script>
+var current_page = 1;
+    $('#load-more-cat').click(function() {
+        var button = $(this),
+            data = {
+                'action': 'load_more_posts',
+                'page': 1,
+                'texonomy': '<?= $texonomy ?>',
+                'category': '<?= $term_id ?>'
+            };
+        $.ajax({
+            url: load_more_params.ajaxurl,
+            data: data,
+            type: 'POST',
+            beforeSend: function(xhr) {
+                button.text('Loading...'); // change the button text, you can also add a preloader here
+            },
+            success: function(data) {
+                if (data) {
+                    $('.category-courses').append(data);
+                  
+                } else {
+                    button.remove(); // remove the button if no more posts
+                }
+            }
+        });
+    });
+ </script>  -->
+				
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const button   = document.getElementById('load-more-cat');
+    const container = document.getElementById('course-container');
+
+    if (!button || !container) return;
+
+    let page     = parseInt(button.getAttribute('data-page'));
+    let termId   = button.getAttribute('data-term');
+    let taxonomy = button.getAttribute('data-tax');
+
+    console.log("Load More ready. page =", page, " term =", termId, " tax =", taxonomy);
+
+    button.addEventListener('click', function () {
+
+        console.log("Load More clicked → page =", page, " term =", termId, " tax =", taxonomy);
+
+        const formData = new FormData();
+        formData.append('action',   'load_more_courses');
+        formData.append('page',     page);
+        formData.append('term_id',  termId);
+        formData.append('taxonomy', taxonomy);
+
+        fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.text())
+        .then(html => {
+            console.log("AJAX response:", html);
+
+            if (html.trim() === "DONE") {
+                button.textContent = 'No more courses';
+                button.disabled = true;
+                return;
+            }
+
+            container.insertAdjacentHTML('beforeend', html);
+
+            page += 1;
+            button.setAttribute('data-page', page);
+
+            console.log("After append total cards =", container.querySelectorAll('.category-courses-item').length);
+        });
+    });
+});
+
+</script>
+
+
+ <?php 
+ get_footer(); 
+ ?>
+<script src="<?php echo get_template_directory_uri();?>/assets/js/category.js" id="category-js"></script>
